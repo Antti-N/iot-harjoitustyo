@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>Liikennevalot</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <div>
+            <svg height="100" width="100">
+                <circle id="vihrea" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="grey" />
+            </svg>
+        </div>
+        <div>
+            <svg height="100" width="100">
+                <circle id="keltainen" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="grey" />
+            </svg>
+        </div>
+        <div>
+            <svg height="100" width="100">
+                <circle id="punainen" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="grey" />
+            </svg>
+        </div>
+    </body>
+</html>
+
+
+<script>
+
+    $(document).ready(function() {
+
+
+        $.get("http://127.0.0.1:3002/valot", function(data) {
+            console.log(data);
+            if(data[0].punainen == 1)
+                $("#punainen").attr("fill", "red");
+
+            if(data[0].keltainen == 1)
+                $("#keltainen").attr("fill", "yellow");
+
+            if(data[0].vihrea == 1)
+                $("#vihrea").attr("fill", "green");
+
+        });
+
+       /* setTimeout(function() {
+
+            location.href= "file:///Users/anttinikku/iot-programming/lopputyo/liikennevalot.html"
+
+        }, 4000)*/
+
+    });
+</script>
