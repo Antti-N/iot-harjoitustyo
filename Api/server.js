@@ -10,7 +10,7 @@ var valoKontroller = require('./valoKontroller');
 const http = require('http');
 const url = require('url');
 
-const hostname = '127.0.0.1';
+const hostname = '85.23.155.160';
 const port = process.env.PORT || 3002;
 
 
@@ -35,6 +35,9 @@ app.use(express.static('public'));
 // REST API Asiakas
 app.route('/valot')
     .get(valoKontroller.valot)
+
+app.route('/ilma')
+    .get(valoKontroller.ilma)
 
 app.get('/', function(request, response){
     response.statusCode = 200;

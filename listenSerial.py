@@ -1,33 +1,47 @@
 import serial
 import mysql.connector
+from datetime import datetime
 
-mydb = mysql.connector.connect(
+db = mysql.connector.connect(
   host="localhost",
-  user="root",
-  passwd="moikkajee",
+  user="iot",
+  passwd="password",
   database="liikennevalot"
 )
-valot = []
-cursor = mydb.cursor()
 
-def kirjoitaTauluun(data):
-    if str(data)[2] == "P":
-        valot = [1, 0, 0]
+cursor = db.cursor()
 
-    if str(data)[2] == "V":
-        valot = [0, 0, 1]
-    
-    if str(data)[2] == "K":
-        valot = [0, 1, 0]
+def deleteFrontRows():
+	cursor.execute("DELETE FROM ilma ORDER BY id LIMIT 1")
+	db.commit()
 
-    
-    sql = "UPDATE valot SET punainen = " + str(valot[0]) + ", keltainen = " + str(valot[1]) + ", vihrea = " + str(valot[2]) + " WHERE id = 1;"
-    cursor.execute(sql)
-    mydb.commit()
+def count():
+	cursor.execute("SELECT COUNT(*) FROM ilma")
+	return cursor.fetchone()
+
+def writeTempAndHum(data):
+	
+	if count()[0] > 20:
+		deleteFrontRows()
+	now = datetime.now()
+
+	curTime = now.strftime("%H:%M:%S")
+	
+	val = (curTime, float(data[0]), float(data[1]))
+	
+	sql = "INSERT INTO ilma (aika, lampo, kosteus) VALUES (%s, %s, %s)"
+	cursor.execute(sql, val)
+	db.commit()
 
 
-arduino = serial.Serial('/dev/cu.usbserial-DN04MSTR', 9600, timeout=.1)
+arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=.1)
+
 while True:
 	data = arduino.readline() #the last bit gets rid of the new-line chars
+	
 	if data:
-		kirjoitaTauluun(data)
+		if data[0] == 'P' or data[0] == 'K' or data[0] == 'V':
+			print("Oli valo")
+		if data[0] == 'I':
+			writeTempAndHum(data[3:].split(","))
+
