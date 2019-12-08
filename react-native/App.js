@@ -34,42 +34,42 @@ class App extends React.Component {
       keltainen: 'white',
       punainen: 'white',
       response : null,
+      ilma:null,
+      lampo:null
+
     }
   }
 
   componentDidMount() {
-    //var kierros= 0; 
-    this._interval = setInterval(() => {
-      this.setState({
-        response: getData()
-      }, () => 
-        //Callback
-        {
-          // kierros++;
-          // console.log("Ollaan kierroksella: "+kierros)
-          // console.log("Response: ",this.state.response)
-          
-          if(this.state.response[0].punainen==1){
-            this.state.punainen="red";
-          }
-          else{
-            this.state.punainen="white"
-          }
-          if (this.state.response[0].keltainen==1){
-            this.state.keltainen="yellow"
-          }
-          else{
-            this.state.keltainen="white";
-          }
-          if(this.state.response[0].vihrea==1){
-            this.state.vihrea="green";
-          }
-          else{
-            this.state.vihrea="white";
-          }
-        }
-      );
 
+    //var kierros= 0; 
+    console.log("ComponentDidMount")
+    this._interval = setInterval(() => {
+      fetch('http://85.23.155.160:3002/valot') 
+        .then(response => response.json())
+      .then((responseJson)=> {
+        console.log("RESPONSE")
+        console.log(responseJson)
+        this.setState({
+         response: responseJson,
+         vihrea: responseJson[0].vihrea,
+         punainen:responseJson[0].punainen
+        })
+        console.log(this.state)
+      })
+      .catch(error=>console.log(error)) //to catch the errors if any
+
+      fetch('http://85.23.155.160:3002/ilma')
+        .then(response => response.json())
+      .then((responseJson)=>{
+        console.log("ILMA")
+        console.log(responseJson)
+        this.setState({
+          response: responseJson,
+          ilma: responseJson[0].kosteus,
+          lampo:responseJson[0].lampo
+         })
+      })
     }, 1000);
   }
 
@@ -84,9 +84,11 @@ class App extends React.Component {
       <View style={{justifyContent: 'center', alignItems: 'center'}}>
         <Text style={{fontSize:32}}>Nyt on hieno kilke</Text  >
         <Text></Text>
-        <View id = 'punainen' style={[styles.circle, {backgroundColor:this.state.punainen}]} /> 
-        <View id = 'keltainen' style={[styles.circle, {backgroundColor:this.state.keltainen}]} />
-        <View id = 'vihrea' style={[styles.circle, {backgroundColor:this.state.vihrea}]} />
+        <View id = 'punainen' style={[styles.circle, {backgroundColor:this.state.punainen == 1 ? "red":"white"}]} /> 
+        <View id = 'vihrea' style={[styles.circle, {backgroundColor:this.state.vihrea == 1 ? "green":"white" }]} />
+        <Text></Text>
+        <View style={{width:200,height:50, borderWidth: 2}}><Text style={{fontSize:20}}>Ilmankosteus: {this.state.ilma}</Text></View>
+        <View style={{width:200,height:50, borderWidth: 2}}><Text style={{fontSize:20}}>Lämpötila: {this.state.lampo}</Text></View>
       </View>
     );
   }
@@ -94,19 +96,20 @@ class App extends React.Component {
 
  
 function getData() {
-  //console.log("getData")
-  var data = [{"id":1,"punainen":0,"vihrea":0,"keltainen":1}];
-  // return fetch('http://127.0.0.1:3002/valot')
-  //   .then((response) => response.json())
-  //   .then((responseJson) => {
-  //     console.log(response)
-  //     return responseJson;
-  //console.log(data)
-  return data;
-    // })
-    // .catch((error) => {
-    //   console.error(error);
-    // });
+
+     fetch('http://85.23.155.160:3002/valot', {
+      method: 'GET'
+   })
+   .then((response) => response.json())
+   .then((responseJson) => {
+     console.log("RESPONSE")
+      console.log(responseJson);
+      return responseJson;
+   })
+   .catch((error) => {
+      console.error(error);
+   });
+
 }
 
 
