@@ -1,3 +1,3 @@
 # iot-harjoitustyo
 
-Datat Arduinosta, backend nodella, clientit web (javascript) ja mobiili (reactnative)
+Datat Arduinosta, backend nodella, client mobiililla (reactnative). Eli arduino vilkuttaa valoja, joita voidaan ihmetellä mobiilisovelluksella. IoT-kurssin harjoitustyö
